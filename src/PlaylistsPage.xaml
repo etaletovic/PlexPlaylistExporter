@@ -4,11 +4,32 @@
              xmlns:viewmodels="clr-namespace:PlexPlaylistExporter.ViewModels"
              x:Class="PlexPlaylistExporter.PlaylistsPage"
              Title="Playlists">
-        <ListView ItemsSource="{Binding Playlists}" SelectedItem="{Binding Selected}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <TextCell Text="{Binding Id}" Detail ="{x:Binding Name}"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+    <ListView ItemsSource="{Binding Playlists}" SelectedItem="{Binding Selected}">
+        <ListView.ItemTemplate>
+            <DataTemplate>
+                <ViewCell>
+                    <Grid Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Image Grid.RowSpan="2"
+                               Source="{Binding ThumbUrl}"
+                               Aspect="AspectFill"
+                               HeightRequest="60"
+                               WidthRequest="60"
+                               Margin="0,0,10,0"
+                               />
+                        
+                        <Label Grid.Column="1" Grid.Row="0" Text="{Binding Id}" FontSize="Micro" Margin="0,0,0,5"/>
+                        <Label Grid.Column="1" Grid.Row="1" Text="{Binding Name}" FontSize="Medium"/>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
 </ContentPage>
