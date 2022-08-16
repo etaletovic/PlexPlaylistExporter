@@ -6,6 +6,8 @@
 
         public string Name { get; set; }
 
+        public string ThumbUrl { get; set; }
+
         public List<Track> Tracks { get; set; }
     }
 }
