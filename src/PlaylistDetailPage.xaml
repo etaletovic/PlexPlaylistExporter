@@ -2,11 +2,36 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PlexPlaylistExporter.PlaylistDetailPage"
+             xmlns:vm="clr-namespace:PlexPlaylistExporter.ViewModels"
+             xmlns:coremodels="clr-namespace:PlexPlaylistExporter.Core.Contracts.Models;assembly=PlexPlaylistExporter.Core"
+             x:DataType="{x:Type vm:PlaylistDetailViewModel}"
              Title="{Binding Playlist.Name}">
-    <VerticalStackLayout>
-        <Label 
-            Text="{Binding Playlist.Name}"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+
+    <ListView ItemsSource="{Binding Playlist.Tracks}" SelectedItem="{Binding SelectedTrack}">
+        <ListView.ItemTemplate>
+            <DataTemplate x:DataType="{x:Type coremodels:Track}">
+                <ViewCell>
+                    <Grid Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Image Grid.RowSpan="2"
+                               BackgroundColor="Green"
+                               Aspect="AspectFill"
+                               HeightRequest="60"
+                               WidthRequest="60"
+                               Margin="0,0,10,0" />
+
+                        <Label Grid.Column="1" Grid.Row="0" Text="{Binding Title}" FontSize="Medium" Margin="0,0,0,5"/>
+                        <Label Grid.Column="1" Grid.Row="1" Text="{Binding Artist}" FontSize="Micro"/>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
 </ContentPage>
