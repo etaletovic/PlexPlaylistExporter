@@ -5,10 +5,13 @@ using System.Reflection.PortableExecutable;
 using System.Text.Json;
 using System.Web;
 using System.Xml.Serialization;
+using TestConsole;
 
 Console.WriteLine("Hello, World!");
 
 const string AccountUrl = "https://plex.tv/users/account";
+
+var secretsManager = new WindowsSecretsManager();
 
 using var client = new HttpClient();
 var plexClient = new PlexClient(client, Options.Create(new PlexClientOptions { ClientId = "252fa245-1c8a-4cb7-8519-6b004cde7449" }));
@@ -23,12 +26,14 @@ await plexClient.AuthenticateClient((url) =>
 var servers = await plexClient.GetServersAsync();
 var resources = await plexClient.GetResourcesAsync();
 
-var serversToDisplay = resources.Where(r => r.Provides.Equals("server",StringComparison.OrdinalIgnoreCase)).ToList();
+var serversToDisplay = resources.Where(r => r.Provides.Equals("server", StringComparison.OrdinalIgnoreCase)).ToList();
 
 Console.ReadKey();
 class PlexClientOptions
 {
     public string ClientId { get; set; }
+
+    public string Token { get; set; }
 }
 
 class PlexClient
@@ -157,6 +162,57 @@ class PlexClient
     }
 }
 
+interface IPlexCredentials
+{
+    string GetToken();
+    void SetToken(string token);
+}
+
+interface ISecretsManager
+{
+    string GetSecret(string secretName);
+    void SetSecret(string secretName, string secretValue);
+    void RemoveSecret(string secretName);
+}
+
+class WindowsSecretsManager : ISecretsManager
+{
+    private readonly string _secretsLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                                                            "PlexExporter",
+                                                            ".secrets");
+    public WindowsSecretsManager()
+    {
+        if (Directory.Exists(_secretsLocation) == false)
+            Directory.CreateDirectory(_secretsLocation);
+    }
+
+    public string GetSecret(string secretName)
+    {
+        var secretLocation = Path.Combine(_secretsLocation, secretName);
+
+        if (!File.Exists(secretLocation))
+            return string.Empty;
+
+        return File.ReadAllText(secretLocation).Unprotect();
+    }
+
+    public void RemoveSecret(string secretName)
+    {
+        var secretLocation = Path.Combine(_secretsLocation, secretName);
+
+        if (File.Exists(secretLocation))
+            File.Delete(secretLocation);
+    }
+
+    public void SetSecret(string secretName, string secretValue)
+    {
+        RemoveSecret(secretName);
+
+        var secretLocation = Path.Combine(_secretsLocation, secretName);
+        File.WriteAllText(secretLocation, secretValue.Protect());
+    }
+}
+
 public class Resource
 {
 
@@ -175,7 +231,7 @@ public class MediaContainer
 
     [XmlAttribute("identifier")]
     public string Identifier { get; set; }
-    
+
     [XmlAttribute("friendlyName")]
     public string FriendlyName { get; set; }
 }
@@ -232,10 +288,10 @@ public class Device
 
     [XmlAttribute("dnsRebindingProtection")]
     public int DnsRebindingProtection { get; set; }
-    
+
     [XmlAttribute("natLoopbackSupported")]
     public int NatLoopbackSupported { get; set; }
-    
+
     [XmlAttribute("publicAddressMatches")]
     public int PublicAddressMatches { get; set; }
 
@@ -277,7 +333,7 @@ public class Server
 
     [XmlAttribute("address")]
     public string Address { get; set; }
-    
+
     [XmlAttribute("port")]
     public int Port { get; set; }
 
