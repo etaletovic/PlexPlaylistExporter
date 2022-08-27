@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using System.Reflection.PortableExecutable;
 using System.Text.Json;
+using System.Threading;
 using System.Web;
 using System.Xml.Serialization;
 using TestConsole;
@@ -12,16 +13,9 @@ Console.WriteLine("Hello, World!");
 const string AccountUrl = "https://plex.tv/users/account";
 
 var secretsManager = new WindowsSecretsManager();
-
+var clientId = "252fa245-1c8a-4cb7-8519-6b004cde7449";
 using var client = new HttpClient();
-var plexClient = new PlexClient(client, Options.Create(new PlexClientOptions { ClientId = "252fa245-1c8a-4cb7-8519-6b004cde7449" }));
-
-
-await plexClient.AuthenticateClient((url) =>
-{
-    using var process = Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-});
-
+var plexClient = new PlexClient(client, new OAuthAuthentication(clientId, AuthenticateClient));
 
 var servers = await plexClient.GetServersAsync();
 var resources = await plexClient.GetResourcesAsync();
@@ -29,11 +23,10 @@ var resources = await plexClient.GetResourcesAsync();
 var serversToDisplay = resources.Where(r => r.Provides.Equals("server", StringComparison.OrdinalIgnoreCase)).ToList();
 
 Console.ReadKey();
-class PlexClientOptions
-{
-    public string ClientId { get; set; }
 
-    public string Token { get; set; }
+static void AuthenticateClient(string url)
+{
+    using var process = Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
 }
 
 class PlexClient
@@ -45,31 +38,144 @@ class PlexClient
     const string ResourcesURL = "https://plex.tv/api/resources?includeHttps={0}&includeRelay={1}";
 
     private readonly HttpClient _client;
-    private readonly PlexClientOptions _options;
-    private PinResponse? _authToken;
+    private readonly IPlexAuthentication _plexAuthentication;
 
-    public PlexClient(HttpClient client, IOptions<PlexClientOptions> options)
+    public PlexClient(HttpClient client, IPlexAuthentication plexAuthentication)
     {
         _client = client;
-        _options = options.Value;
+        _plexAuthentication = plexAuthentication;
     }
 
-    public async Task AuthenticateClient(Action<string> promptUrlSignInCallback, TimeSpan timeout = default)
+    public async Task<IEnumerable<Device>> GetResourcesAsync(bool includeHttps = true, bool includeRelay = true)
     {
         await Task.CompletedTask;
 
-        if (promptUrlSignInCallback == null)
-            throw new ArgumentNullException(nameof(promptUrlSignInCallback));
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, string.Format(ResourcesURL, includeHttps.ToInt(), includeRelay.ToInt()));
 
-        if (timeout == default)
-            timeout = TimeSpan.FromSeconds(30);
+        foreach (var authHeader in await _plexAuthentication.GetHeaders())
+            requestMessage.Headers.Add(authHeader.Key, authHeader.Value);
+
+        using var responseMessage = await _client.SendAsync(requestMessage);
+
+        var responseStream = await responseMessage.Content.ReadAsStreamAsync();
+
+        var serializer = new XmlSerializer(typeof(MediaContainer));
+        if (serializer.Deserialize(responseStream) is not MediaContainer mediaContainer)
+            return Enumerable.Empty<Device>();
+
+        return mediaContainer.Devices ?? Enumerable.Empty<Device>();
+    }
+
+    public async Task<IEnumerable<Server>> GetServersAsync()
+    {
+        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, ServersUrl);
+
+        foreach (var authHeader in await _plexAuthentication.GetHeaders())
+            requestMessage.Headers.Add(authHeader.Key, authHeader.Value);
+
+        using var responseMessage = await _client.SendAsync(requestMessage);
+
+        var responseStream = await responseMessage.Content.ReadAsStreamAsync();
+
+        var serializer = new XmlSerializer(typeof(MediaContainer));
+        if (serializer.Deserialize(responseStream) is not MediaContainer mediaContainer)
+            return Enumerable.Empty<Server>();
+
+        return mediaContainer.Servers ?? Enumerable.Empty<Server>();
+    }
+}
+
+interface IPlexAuthentication
+{
+    Task<IDictionary<string, string>> GetHeaders();
+}
+
+
+class AuthTokenAuthentication : IPlexAuthentication
+{
+    private readonly string token;
+
+    public AuthTokenAuthentication(string token)
+    {
+        this.token = token;
+    }
+
+    public async Task<IDictionary<string, string>> GetHeaders()
+    {
+        await Task.CompletedTask;
+        return new Dictionary<string, string>
+        {
+            {"X-Plex-Token", token},
+        };
+    }
+}
+
+class OAuthAuthentication : IPlexAuthentication, IDisposable
+{
+    const string NewPinURL = "https://plex.tv/api/v2/pins";
+    const string PinStatusURL = "https://plex.tv/api/v2/pins/{0}";
+    private readonly string _clientId;
+    private readonly Action<string> _promptUrlSignInCallback;
+    private readonly TimeSpan _timeout;
+    private readonly HttpClient _client;
+    private bool disposedValue;
+
+    private PinResponse? _authToken;
+    public OAuthAuthentication(string clientId, Action<string> promptUrlSignInCallback, TimeSpan timeout = default)
+    {
+        if (string.IsNullOrWhiteSpace(clientId))
+        {
+            throw new ArgumentException($"'{nameof(clientId)}' cannot be null or whitespace.", nameof(clientId));
+        }
+
+        _timeout = timeout;
+        if (_timeout == default)
+            _timeout = TimeSpan.FromSeconds(30);
+
+        _client = new HttpClient();
+        this._clientId = clientId;
+        this._promptUrlSignInCallback = promptUrlSignInCallback;
+    }
+
+    public async Task<IDictionary<string, string>> GetHeaders()
+    {
+        await RefreshTokenIfNecessary();
+
+        var token = _authToken?.authToken ?? throw new InvalidOperationException("Token is null");
+
+        return new Dictionary<string, string>
+        {
+            {"X-Plex-Token", token }
+        };
+    }
+
+    private bool IsTokenExpired(PinResponse? token)
+    {
+        if (token is null) return true;
+        if (token.trusted == false) return true;
+        if (token.expiresAt > DateTime.Now.AddMinutes(-5)) return true;
+
+        return false;
+    }
+
+    private async Task RefreshTokenIfNecessary()
+    {
+        await Task.CompletedTask;
+
+        if (IsTokenExpired(_authToken) == false) return;
+
+        await RefreshToken();
+    }
+
+    private async Task RefreshToken()
+    {
+        await Task.CompletedTask;
 
         _authToken = null;
-
         // Create new PIN
         using var newPinMessage = new HttpRequestMessage(HttpMethod.Post, NewPinURL);
         newPinMessage.Headers.Add(PlexHeaders.XPlexProduct, "Plex Playlist Exporter");
-        newPinMessage.Headers.Add(PlexHeaders.XPlexClientIdentifier, _options.ClientId);
+        newPinMessage.Headers.Add(PlexHeaders.XPlexClientIdentifier, _clientId);
         newPinMessage.Headers.Add("Accept", "application/json");
         newPinMessage.Headers.Add(PlexHeaders.Strong, "true");
 
@@ -82,7 +188,7 @@ class PlexClient
 
         // Build login URL for the browser
         var loginBaseString = "https://app.plex.tv/auth#";
-        var clientID = $"clientID={_options.ClientId}";
+        var clientID = $"clientID={_clientId}";
         var code = $"code={pin.code}";
         var appName = $"{HttpUtility.UrlEncode("context[device][product]")}={HttpUtility.UrlEncode("Plex Web")}";
         var appVersion = $"{HttpUtility.UrlEncode("context[device][version]")}=v1";
@@ -90,13 +196,13 @@ class PlexClient
         var forwardUrl = $"forwardUrl={HttpUtility.UrlEncode("https://app.plex.tv")}";
         var loginURL = $"{loginBaseString}?{clientID}&{appName}&{appVersion}&{device}&{forwardUrl}&{code}";
 
-        promptUrlSignInCallback.Invoke(loginURL);
+        _promptUrlSignInCallback.Invoke(loginURL);
 
-        var timeoutAt = DateTime.Now.Add(timeout);
+        var timeoutAt = DateTime.Now.Add(_timeout);
         var formData = new Dictionary<string, string>
         {
             { "code", pin.code },
-            { PlexHeaders.XPlexClientIdentifier, _options.ClientId },
+            { PlexHeaders.XPlexClientIdentifier, _clientId },
         };
 
         while (DateTime.Now < timeoutAt)
@@ -123,42 +229,36 @@ class PlexClient
             break;
         }
 
-        if (_authToken is null)
-            throw new InvalidOperationException("Failed to obtain auth token");
+        throw new InvalidOperationException("Failed to obtain auth token");
     }
 
-    public async Task<IEnumerable<Device>> GetResourcesAsync(bool includeHttps = true, bool includeRelay = true)
+    protected virtual void Dispose(bool disposing)
     {
-        await Task.CompletedTask;
+        if (disposedValue) return;
 
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, string.Format(ResourcesURL, includeHttps.ToInt(), includeRelay.ToInt()));
-        requestMessage.Headers.Add(PlexHeaders.XPlexToken, _authToken?.authToken);
+        if (disposing)
+        {
+            // Dispose managed state (managed objects)
+            _client?.Dispose();
+        }
 
-        using var responseMessage = await _client.SendAsync(requestMessage);
-
-        var responseStream = await responseMessage.Content.ReadAsStreamAsync();
-
-        var serializer = new XmlSerializer(typeof(MediaContainer));
-        if (serializer.Deserialize(responseStream) is not MediaContainer mediaContainer)
-            return Enumerable.Empty<Device>();
-
-        return mediaContainer.Devices ?? Enumerable.Empty<Device>();
+        // Free unmanaged resources (unmanaged objects) and override finalizer
+        // Set large fields to null
+        disposedValue = true;
     }
 
-    public async Task<IEnumerable<Server>> GetServersAsync()
+    // Override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+    // ~OAuthAuthentication()
+    // {
+    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+    //     Dispose(disposing: false);
+    // }
+
+    public void Dispose()
     {
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, ServersUrl);
-        requestMessage.Headers.Add(PlexHeaders.XPlexToken, _authToken?.authToken);
-
-        using var responseMessage = await _client.SendAsync(requestMessage);
-
-        var responseStream = await responseMessage.Content.ReadAsStreamAsync();
-
-        var serializer = new XmlSerializer(typeof(MediaContainer));
-        if (serializer.Deserialize(responseStream) is not MediaContainer mediaContainer)
-            return Enumerable.Empty<Server>();
-
-        return mediaContainer.Servers ?? Enumerable.Empty<Server>();
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }
 
