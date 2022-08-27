@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexPlaylistExporter.Core",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexPlaylistExporter.MAUIApp", "PlexPlaylistExporter.MAUIApp\PlexPlaylistExporter.MAUIApp.csproj", "{5B467534-1710-441B-A9A1-B92CEDF00F9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{3856A11E-D393-48BE-B286-B0F1A470F69A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestConsole", "TestConsole\TestConsole.csproj", "{3856A11E-D393-48BE-B286-B0F1A470F69A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{C5C2ED18-0280-4E1F-A13A-0D3DCBEDB18D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{3856A11E-D393-48BE-B286-B0F1A470F69A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3856A11E-D393-48BE-B286-B0F1A470F69A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3856A11E-D393-48BE-B286-B0F1A470F69A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5C2ED18-0280-4E1F-A13A-0D3DCBEDB18D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5C2ED18-0280-4E1F-A13A-0D3DCBEDB18D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5C2ED18-0280-4E1F-A13A-0D3DCBEDB18D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5C2ED18-0280-4E1F-A13A-0D3DCBEDB18D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
