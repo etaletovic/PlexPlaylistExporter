@@ -1,18 +1,19 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Microsoft.Extensions.Options;
+using PlexPlaylistExporter.Core.Contracts.Services;
+using PlexPlaylistExporter.Core.Services;
 using System.Diagnostics;
 using System.Reflection.PortableExecutable;
 using System.Text.Json;
 using System.Threading;
 using System.Web;
 using System.Xml.Serialization;
-using TestConsole;
 
 Console.WriteLine("Hello, World!");
 
 const string AccountUrl = "https://plex.tv/users/account";
 
-var secretsManager = new WindowsSecretsManager();
+var secretsManager = new WindowsSecretsManager(new DataProtectionService());
 var clientId = "252fa245-1c8a-4cb7-8519-6b004cde7449";
 using var client = new HttpClient();
 var plexClient = new PlexClient(client, new OAuthAuthentication(clientId, AuthenticateClient));
@@ -280,10 +281,13 @@ class WindowsSecretsManager : ISecretsManager
     private readonly string _secretsLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                                                             "PlexExporter",
                                                             ".secrets");
-    public WindowsSecretsManager()
+    private readonly IDataProtectionService _dataProtectionService;
+
+    public WindowsSecretsManager(IDataProtectionService dataProtectionService)
     {
         if (Directory.Exists(_secretsLocation) == false)
             Directory.CreateDirectory(_secretsLocation);
+        _dataProtectionService = dataProtectionService;
     }
 
     public string GetSecret(string secretName)
@@ -293,7 +297,7 @@ class WindowsSecretsManager : ISecretsManager
         if (!File.Exists(secretLocation))
             return string.Empty;
 
-        return File.ReadAllText(secretLocation).Unprotect();
+        return _dataProtectionService.Unprotect(File.ReadAllText(secretLocation));
     }
 
     public void RemoveSecret(string secretName)
@@ -309,7 +313,7 @@ class WindowsSecretsManager : ISecretsManager
         RemoveSecret(secretName);
 
         var secretLocation = Path.Combine(_secretsLocation, secretName);
-        File.WriteAllText(secretLocation, secretValue.Protect());
+        File.WriteAllText(secretLocation, _dataProtectionService.Protect(secretValue));
     }
 }
 
