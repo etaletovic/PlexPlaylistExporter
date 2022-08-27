@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PlexPlaylistExported.PlexClient\PlexPlaylistExported.PlexClient.csproj" />
     <ProjectReference Include="..\PlexPlaylistExporter.Core\PlexPlaylistExporter.Core.csproj" />
   </ItemGroup>
 
