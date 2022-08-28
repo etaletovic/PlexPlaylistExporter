@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PlexPlaylistExported.PlexClient\PlexPlaylistExporter.PlexClient.csproj" />
     <ProjectReference Include="..\PlexPlaylistExporter.Core\PlexPlaylistExporter.Core.csproj" />
     <ProjectReference Include="..\PlexPlaylistExporter.DataProtection.Windows\PlexPlaylistExporter.DataProtection.Windows.csproj" />
+    <ProjectReference Include="..\PlexPlaylistExporter.PlexClient\PlexPlaylistExporter.PlexClient.csproj" />
     <ProjectReference Include="..\PlexPlaylistExporter.SecretsManager\PlexPlaylistExporter.SecretsManager.csproj" />
   </ItemGroup>
 
