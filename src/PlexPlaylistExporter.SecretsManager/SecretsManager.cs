@@ -1,46 +1,86 @@
 ﻿using PlexPlaylistExporter.DataProtection.Abstractions.Contracts;
+using PlexPlaylistExporter.SecretsManager.Abstractions.Contracts;
 
 namespace PlexPlaylistExporter.SecretsManager
 {
     public class SecretsManager : ISecretsManager
     {
-        private readonly string _secretsLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        public static readonly string SecretsLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                                                                 "PlexExporter",
                                                                 ".secrets");
 
         private readonly IDataProtectionService _dataProtectionService;
 
-        public SecretsManager(IDataProtectionService dataProtectionService)
+        public SecretsManager(IDataProtectionService dataProtectionService = null)
         {
-            if (Directory.Exists(_secretsLocation) == false)
-                Directory.CreateDirectory(_secretsLocation);
+            if (Directory.Exists(SecretsLocation) == false)
+                Directory.CreateDirectory(SecretsLocation);
+
             _dataProtectionService = dataProtectionService;
+            EncryptionEnabled = _dataProtectionService != null;
         }
+
+        public bool EncryptionEnabled { get; private set; }
 
         public string GetSecret(string secretName)
         {
-            var secretLocation = Path.Combine(_secretsLocation, secretName);
+            if (string.IsNullOrWhiteSpace(secretName))
+                throw new ArgumentException($"'{nameof(secretName)}' cannot be null or whitespace.", nameof(secretName));
 
-            if (!File.Exists(secretLocation))
-                return string.Empty;
+            try
+            {
+                var secretLocation = Path.Combine(SecretsLocation, secretName);
 
-            return _dataProtectionService.Unprotect(File.ReadAllText(secretLocation));
+                if (!File.Exists(secretLocation))
+                    return string.Empty;
+
+                var data = File.ReadAllText(secretLocation);
+
+                return EncryptionEnabled ? _dataProtectionService.Unprotect(data) : data;
+            }
+            catch (Exception e)
+            {
+                throw new SecretsManagerException("Could not get the secret", e);
+            }
         }
 
         public void RemoveSecret(string secretName)
         {
-            var secretLocation = Path.Combine(_secretsLocation, secretName);
+            if (string.IsNullOrWhiteSpace(secretName))
+                throw new ArgumentException($"'{nameof(secretName)}' cannot be null or whitespace.", nameof(secretName));
 
-            if (File.Exists(secretLocation))
-                File.Delete(secretLocation);
+            try
+            {
+                var secretLocation = Path.Combine(SecretsLocation, secretName);
+
+                if (File.Exists(secretLocation))
+                    File.Delete(secretLocation);
+            }
+            catch (Exception e)
+            {
+                throw new SecretsManagerException("Could not remove the secret", e);
+            }
         }
 
         public void SetSecret(string secretName, string secretValue)
         {
-            RemoveSecret(secretName);
+            if (string.IsNullOrWhiteSpace(secretName))
+                throw new ArgumentException($"'{nameof(secretName)}' cannot be null or whitespace.", nameof(secretName));
 
-            var secretLocation = Path.Combine(_secretsLocation, secretName);
-            File.WriteAllText(secretLocation, _dataProtectionService.Protect(secretValue));
+            try
+            {
+                RemoveSecret(secretName);
+
+                var secretLocation = Path.Combine(SecretsLocation, secretName);
+
+                var data = EncryptionEnabled ? _dataProtectionService.Protect(secretValue) : secretValue;
+
+                File.WriteAllText(secretLocation, data);
+            }
+            catch (Exception e)
+            {
+                throw new SecretsManagerException("Could not set the secret", e);
+            }
         }
     }
 }
