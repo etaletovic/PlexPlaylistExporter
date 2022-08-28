@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.31611.283
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexPlaylistExporter.Core", "PlexPlaylistExporter.Core\PlexPlaylistExporter.Core.csproj", "{41BA9B25-5378-49A2-8F74-11317A2CD60F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexPlaylistExporter.MAUIApp", "PlexPlaylistExporter.MAUIApp\PlexPlaylistExporter.MAUIApp.csproj", "{5B467534-1710-441B-A9A1-B92CEDF00F9C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestConsole", "TestConsole\TestConsole.csproj", "{3856A11E-D393-48BE-B286-B0F1A470F69A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{C5C2ED18-0280-4E1F-A13A-0D3DCBEDB18D}"
@@ -21,6 +19,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexPlaylistExporter.Secret
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexPlaylistExporter.PlexClient", "PlexPlaylistExporter.PlexClient\PlexPlaylistExporter.PlexClient.csproj", "{023E413B-E1C9-4464-95D8-2A0D9828C237}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{C5ED4BB7-153F-4996-93BC-5BF0C580183D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexPlaylistExporter.MAUIApp", "Apps\PlexPlaylistExporter.MAUIApp\PlexPlaylistExporter.MAUIApp.csproj", "{CA6AC830-090C-4277-8542-E46835C2CAF1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,12 +33,6 @@ Global
 		{41BA9B25-5378-49A2-8F74-11317A2CD60F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41BA9B25-5378-49A2-8F74-11317A2CD60F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41BA9B25-5378-49A2-8F74-11317A2CD60F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5B467534-1710-441B-A9A1-B92CEDF00F9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5B467534-1710-441B-A9A1-B92CEDF00F9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5B467534-1710-441B-A9A1-B92CEDF00F9C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{5B467534-1710-441B-A9A1-B92CEDF00F9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5B467534-1710-441B-A9A1-B92CEDF00F9C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5B467534-1710-441B-A9A1-B92CEDF00F9C}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{3856A11E-D393-48BE-B286-B0F1A470F69A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3856A11E-D393-48BE-B286-B0F1A470F69A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3856A11E-D393-48BE-B286-B0F1A470F69A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -65,9 +61,18 @@ Global
 		{023E413B-E1C9-4464-95D8-2A0D9828C237}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{023E413B-E1C9-4464-95D8-2A0D9828C237}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{023E413B-E1C9-4464-95D8-2A0D9828C237}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA6AC830-090C-4277-8542-E46835C2CAF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA6AC830-090C-4277-8542-E46835C2CAF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA6AC830-090C-4277-8542-E46835C2CAF1}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{CA6AC830-090C-4277-8542-E46835C2CAF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA6AC830-090C-4277-8542-E46835C2CAF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA6AC830-090C-4277-8542-E46835C2CAF1}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CA6AC830-090C-4277-8542-E46835C2CAF1} = {C5ED4BB7-153F-4996-93BC-5BF0C580183D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {61F7FB11-1E47-470C-91E2-47F8143E1572}

@@ -53,7 +53,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\PlexPlaylistExporter.Core\PlexPlaylistExporter.Core.csproj" />
+	  <ProjectReference Include="..\..\PlexPlaylistExporter.Core\PlexPlaylistExporter.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
