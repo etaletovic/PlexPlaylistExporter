@@ -8,21 +8,18 @@ namespace PlexPlaylistExporter.PlexClient
     public class PlexClient: IDisposable
     {
         const string ServersUrl = "https://plex.tv/pms/servers.xml";
-        const string DevicesUrl = "https://plex.tv/devices.xml";
-        const string NewPinURL = "https://plex.tv/api/v2/pins";
-        const string PinStatusURL = "https://plex.tv/api/v2/pins/{0}";
         const string ResourcesURL = "https://plex.tv/api/resources?includeHttps={0}&includeRelay={1}";
 
         private readonly HttpClient _client;
         private readonly IPlexAuthentication _plexAuthentication;
        
-        private bool shouldDisposeClient;
-        private bool disposedValue;
+        private bool _shouldDisposeClient;
+        private bool _disposedValue;
 
         public PlexClient(IPlexAuthentication plexAuthentication)
             : this(new HttpClient(), plexAuthentication)
         {
-            shouldDisposeClient = true;
+            _shouldDisposeClient = true;
         }
 
         public PlexClient(HttpClient client, IPlexAuthentication plexAuthentication)
@@ -71,19 +68,19 @@ namespace PlexPlaylistExporter.PlexClient
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
                     // dispose managed state (managed objects)
 
-                    if(shouldDisposeClient)
+                    if(_shouldDisposeClient)
                         _client.Dispose();
                 }
 
                 // free unmanaged resources (unmanaged objects) and override finalizer
                 // set large fields to null
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
