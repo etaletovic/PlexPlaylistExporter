@@ -1,7 +1,7 @@
 ﻿using Foundation;
 using PlexPlaylistExporter.MAUIApp;
 
-namespace PlexPlaylistExporter.App.Platforms.MacCatalyst;
+namespace PlexPlaylistExporter.MAUIApp.Platforms.MacCatalyst;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate

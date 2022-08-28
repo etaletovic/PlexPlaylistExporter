@@ -2,7 +2,7 @@
 using Android.Runtime;
 using PlexPlaylistExporter.MAUIApp;
 
-namespace PlexPlaylistExporter.App.Platforms.Android;
+namespace PlexPlaylistExporter.MAUIApp.Platforms.Android;
 
 [Application]
 public class MainApplication : MauiApplication

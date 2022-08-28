@@ -13,6 +13,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\Unit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexPlaylistExported.PlexClient", "PlexPlaylistExported.PlexClient\PlexPlaylistExported.PlexClient.csproj", "{0A1696B4-5A08-4386-87B3-52E1530B26B6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexPlaylistExporter.SecretsManager.Abstractions", "PlexPlaylistExporter.SecretsManager.Abstractions\PlexPlaylistExporter.SecretsManager.Abstractions.csproj", "{055BAED7-6D75-4A4A-9624-EB86B0B791E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexPlaylistExporter.DataProtection.Abstractions", "PlexPlaylistExporter.DataProtection.Abstractions\PlexPlaylistExporter.DataProtection.Abstractions.csproj", "{0FD2941A-7647-4E84-87FD-2A81ED0B3E22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexPlaylistExporter.DataProtection.Windows", "PlexPlaylistExporter.DataProtection.Windows\PlexPlaylistExporter.DataProtection.Windows.csproj", "{471000A6-8FDD-4E80-BDBF-B5C9E7E83AF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexPlaylistExporter.SecretsManager", "PlexPlaylistExporter.SecretsManager\PlexPlaylistExporter.SecretsManager.csproj", "{DB27A0E1-55D1-47DB-BE11-87853D6E73F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +49,22 @@ Global
 		{0A1696B4-5A08-4386-87B3-52E1530B26B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A1696B4-5A08-4386-87B3-52E1530B26B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A1696B4-5A08-4386-87B3-52E1530B26B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{055BAED7-6D75-4A4A-9624-EB86B0B791E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{055BAED7-6D75-4A4A-9624-EB86B0B791E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{055BAED7-6D75-4A4A-9624-EB86B0B791E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{055BAED7-6D75-4A4A-9624-EB86B0B791E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FD2941A-7647-4E84-87FD-2A81ED0B3E22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FD2941A-7647-4E84-87FD-2A81ED0B3E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FD2941A-7647-4E84-87FD-2A81ED0B3E22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FD2941A-7647-4E84-87FD-2A81ED0B3E22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{471000A6-8FDD-4E80-BDBF-B5C9E7E83AF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{471000A6-8FDD-4E80-BDBF-B5C9E7E83AF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{471000A6-8FDD-4E80-BDBF-B5C9E7E83AF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{471000A6-8FDD-4E80-BDBF-B5C9E7E83AF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB27A0E1-55D1-47DB-BE11-87853D6E73F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB27A0E1-55D1-47DB-BE11-87853D6E73F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB27A0E1-55D1-47DB-BE11-87853D6E73F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB27A0E1-55D1-47DB-BE11-87853D6E73F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

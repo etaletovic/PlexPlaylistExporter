@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using PlexPlaylistExporter.Core.Contracts.Services;
+using PlexPlaylistExporter.DataProtection.Abstractions.Contracts;
 
-namespace PlexPlaylistExporter.Core.Services
+namespace PlexPlaylistExporter.DataProtection.Windows
 {
     public class DataProtectionService : IDataProtectionService
     {
@@ -26,7 +26,12 @@ namespace PlexPlaylistExporter.Core.Services
             if (value is null) return string.Empty;
 
             byte[] protectedData = Convert.FromBase64String(value);
-            byte[] entropy = Encoding.ASCII.GetBytes(Assembly.GetExecutingAssembly().FullName);
+            
+            var assemblyName = Assembly.GetExecutingAssembly()?.FullName;
+            if (string.IsNullOrWhiteSpace(assemblyName))
+                throw new InvalidOperationException("Assembly name can't be null or empty");
+
+            byte[] entropy = Encoding.ASCII.GetBytes(assemblyName);
             return Encoding.ASCII.GetString(ProtectedData.Unprotect(protectedData, entropy, DataProtectionScope.CurrentUser));
         }
 

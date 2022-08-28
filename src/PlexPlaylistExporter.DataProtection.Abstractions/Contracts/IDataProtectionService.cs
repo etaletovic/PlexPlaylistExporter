@@ -1,4 +1,4 @@
-﻿namespace PlexPlaylistExporter.Core.Contracts.Services
+﻿namespace PlexPlaylistExporter.DataProtection.Abstractions.Contracts
 {
     public interface IDataProtectionService
     {

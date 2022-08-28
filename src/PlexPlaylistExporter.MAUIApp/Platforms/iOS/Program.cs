@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace PlexPlaylistExporter.App.Platforms.iOS;
+namespace PlexPlaylistExporter.MAUIApp.Platforms.iOS;
 
 public class Program
 {
