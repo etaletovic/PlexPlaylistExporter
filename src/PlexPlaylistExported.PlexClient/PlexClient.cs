@@ -1,9 +1,9 @@
 ﻿using System.Xml.Serialization;
-using PlexPlaylistExported.PlexClient.Contracts.Interfaces;
-using PlexPlaylistExported.PlexClient.Contracts.Models;
 using PlexPlaylistExporter.Core.Extensions;
+using PlexPlaylistExporter.PlexClient.Contracts.Interfaces;
+using PlexPlaylistExporter.PlexClient.Contracts.Models;
 
-namespace PlexPlaylistExported.PlexClient
+namespace PlexPlaylistExporter.PlexClient
 {
     public class PlexClient
     {

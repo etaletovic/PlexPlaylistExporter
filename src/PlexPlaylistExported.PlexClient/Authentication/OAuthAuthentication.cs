@@ -1,9 +1,9 @@
 ﻿using System.Text.Json;
 using System.Web;
-using PlexPlaylistExported.PlexClient.Contracts.Interfaces;
-using PlexPlaylistExported.PlexClient.Contracts.Models;
+using PlexPlaylistExporter.PlexClient.Contracts.Interfaces;
+using PlexPlaylistExporter.PlexClient.Contracts.Models;
 
-namespace PlexPlaylistExported.PlexClient.Authentication
+namespace PlexPlaylistExporter.PlexClient.Authentication
 {
     public class OAuthAuthentication : IPlexAuthentication, IDisposable
     {

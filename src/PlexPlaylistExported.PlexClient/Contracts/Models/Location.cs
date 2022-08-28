@@ -1,4 +1,4 @@
-﻿namespace PlexPlaylistExported.PlexClient.Contracts.Models
+﻿namespace PlexPlaylistExporter.PlexClient.Contracts.Models
 {
     public class Location
     {

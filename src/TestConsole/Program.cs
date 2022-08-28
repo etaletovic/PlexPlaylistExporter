@@ -1,6 +1,6 @@
-﻿using PlexPlaylistExported.PlexClient;
-using PlexPlaylistExported.PlexClient.Authentication;
-using PlexPlaylistExporter.DataProtection.Windows;
+﻿using PlexPlaylistExporter.DataProtection.Windows;
+using PlexPlaylistExporter.PlexClient;
+using PlexPlaylistExporter.PlexClient.Authentication;
 using PlexPlaylistExporter.SecretsManager;
 using System.Diagnostics;
 

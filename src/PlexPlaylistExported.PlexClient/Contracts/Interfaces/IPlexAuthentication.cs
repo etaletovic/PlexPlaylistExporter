@@ -1,4 +1,4 @@
-﻿namespace PlexPlaylistExported.PlexClient.Contracts.Interfaces
+﻿namespace PlexPlaylistExporter.PlexClient.Contracts.Interfaces
 {
     public interface IPlexAuthentication
     {
